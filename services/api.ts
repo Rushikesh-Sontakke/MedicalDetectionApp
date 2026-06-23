@@ -1,12 +1,12 @@
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 
-// Update with your actual Render URL
-const BASE_URL = 'https://pill-identification-ocr-based.onrender.com';
+// Backend: your Hugging Face Space (Docker)
+const BASE_URL = 'https://rushijain-pill-identification.hf.space';
 
 const convertImageToBase64 = async (imageUri: string): Promise<string> => {
   try {
     const base64 = await FileSystem.readAsStringAsync(imageUri, {
-      encoding: FileSystem.EncodingType.Base64,
+      encoding: 'base64',
     });
     return `data:image/jpeg;base64,${base64}`;
   } catch (error) {

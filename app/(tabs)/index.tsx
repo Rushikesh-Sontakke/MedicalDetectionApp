@@ -65,7 +65,7 @@ export default function HomeScreen() {
       }
 
       const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['images'], 
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -75,14 +75,14 @@ export default function HomeScreen() {
         await processImage(result.assets[0].uri);
       }
     } catch (error) {
-      Alert.alert('🚨 圖片辨識錯誤', (error as Error).message);
+      Alert.alert('Image error', (error as Error).message);
     }
   };
 
   const selectImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'], 
+        mediaTypes: ['images'],
         allowsEditing: true,
         aspect: [1, 1],
         quality: 0.8,
@@ -92,7 +92,7 @@ export default function HomeScreen() {
         await processImage(result.assets[0].uri);
       }
     } catch (error) {
-      Alert.alert('🚨 圖片辨識錯誤', (error as Error).message);
+      Alert.alert('Image error', (error as Error).message);
     }
   };
 
@@ -100,23 +100,22 @@ export default function HomeScreen() {
     setLoading(true);
     try {
       const response = await uploadImage(imageUri);
-      
+
       if (!response.ok) {
-        Alert.alert('辨識失敗', response.error || '未知錯誤');
+        Alert.alert('Recognition failed', response.error || 'Unknown error');
         return;
       }
 
       const result = response.result || {};
-      
+
       const colors = result['顏色'] || [];
       setRecognizedText((result['文字辨識'] || []).join(', '));
       setColor1(colors[0] || '');
       setColor2(colors[1] || '');
       setShape(result['外型'] || '');
       setCroppedImage(result.cropped_image);
-      
     } catch (error) {
-      Alert.alert('🚨 伺服器錯誤，請稍後再試。');
+      Alert.alert('Server error', 'Please try again later.');
     } finally {
       setLoading(false);
     }
@@ -129,24 +128,24 @@ export default function HomeScreen() {
     const selectedShape = shape.trim();
 
     const payload = {
-      texts: selectedText.split(',').map(t => t.trim()).filter(Boolean),
+      texts: selectedText.split(',').map((t) => t.trim()).filter(Boolean),
       colors: [selectedColor1, selectedColor2].filter(Boolean),
-      shape: selectedShape
+      shape: selectedShape,
     };
 
     setLoading(true);
     try {
       const response = await matchPill(payload);
-      
+
       if (response.error) {
-        Alert.alert('❌ 錯誤訊息', response.error);
+        Alert.alert('Error', response.error);
         return;
       }
 
       setMatchResults(response);
       setModalVisible(true);
     } catch (error) {
-      Alert.alert('⚠️ JSON 解析錯誤', (error as Error).message);
+      Alert.alert('Error', (error as Error).message);
     } finally {
       setLoading(false);
     }
@@ -156,41 +155,42 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <View style={styles.innerContainer}>
-          {/* Title*/}
-          <View style={styles.titleContainer}>
-            <Text style={styles.title}>醫療藥物辨識系統</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.title}>Pill Identification System</Text>
+            <Text style={styles.subtitle}>
+              Snap a pill photo — OCR imprint reading + HSV color & shape recognition
+            </Text>
           </View>
-          
-          {/* Camera buttons*/}
+
+          {/* Camera buttons */}
           <View style={styles.buttonContainer}>
             <Button
-              mode="contained"
+              mode="outlined"
               onPress={takePicture}
               style={styles.cameraButton}
-              buttonColor="#fff"
-              textColor="#000"
+              textColor="#0f766e"
               loading={loading}
               disabled={loading}
               labelStyle={styles.buttonLabel}
             >
-              點擊拍照
+              📷 Take Photo
             </Button>
-            
+
             <Button
-              mode="contained"
+              mode="outlined"
               onPress={selectImage}
               style={styles.cameraButton}
-              buttonColor="#fff"
-              textColor="#000"
+              textColor="#0f766e"
               loading={loading}
               disabled={loading}
               labelStyle={styles.buttonLabel}
             >
-              選擇檔案
+              🖼️ Choose Image
             </Button>
           </View>
 
-          {/* Photo container*/}
+          {/* Photo container */}
           {croppedImage && (
             <View style={styles.photoContainer}>
               <Image
@@ -202,57 +202,51 @@ export default function HomeScreen() {
           )}
 
           {/* Recognition results section */}
-          <Text style={styles.sectionTitle}>辨識結果</Text>
-          
-          {/* Text input*/}
+          <Text style={styles.sectionTitle}>Detected — edit if needed</Text>
+
+          {/* Text input */}
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>文字：</Text>
+            <Text style={styles.inputLabel}>Imprint</Text>
             <TextInput
               value={recognizedText}
               onChangeText={setRecognizedText}
               multiline
+              placeholder="e.g. P 500"
               style={styles.textInput}
               mode="outlined"
-              outlineColor="#000"
-              activeOutlineColor="#000"
+              outlineColor="#e5e7eb"
+              activeOutlineColor="#0d9488"
             />
           </View>
 
-          {/* Color pickers dropdowns */}
-          <ColorPicker
-            label="顏色一"
-            selectedColor={color1}
-            onColorSelect={setColor1}
-          />
+          {/* Color picker dropdowns */}
+          <ColorPicker label="Color 1" selectedColor={color1} onColorSelect={setColor1} />
 
           <ColorPicker
-            label="顏色二"
+            label="Color 2"
             selectedColor={color2}
             onColorSelect={setColor2}
             allowEmpty
           />
 
-          {/* Shape picker*/}
-          <ShapePicker
-            selectedShape={shape}
-            onShapeSelect={setShape}
-          />
+          {/* Shape picker */}
+          <ShapePicker selectedShape={shape} onShapeSelect={setShape} />
 
-          {/* Confirm button*/}
+          {/* Confirm button */}
           <Button
             mode="contained"
             onPress={confirmMatch}
             style={styles.confirmButton}
-            buttonColor="#fff"
-            textColor="#000"
+            buttonColor="#0d9488"
+            textColor="#ffffff"
             loading={loading}
             disabled={loading}
-            labelStyle={styles.buttonLabel}
+            labelStyle={styles.confirmLabel}
           >
-            確認藥物比對
+            🔍 Match Medication
           </Button>
 
-          {/* Result modal functionality */}
+          {/* Result modal */}
           <ResultModal
             visible={modalVisible}
             onDismiss={() => setModalVisible(false)}
@@ -267,7 +261,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#cebba0',
+    backgroundColor: '#eef2f6',
     padding: 10,
   },
   scrollContainer: {
@@ -276,52 +270,56 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   innerContainer: {
-    backgroundColor: '#c9b281',
-    borderRadius: width * 0.008,
-    padding: width * 0.02,
-    width: width * 0.9,
+    backgroundColor: '#ffffff',
+    borderRadius: 18,
+    padding: 22,
+    width: width * 0.92,
     maxWidth: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: width * 0.004 },
-    shadowOpacity: 0.1,
-    shadowRadius: width * 0.008,
-    elevation: 5,
+    shadowColor: '#0f172a',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 18,
+    elevation: 4,
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 20,
   },
-  titleContainer: {
+  header: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 22,
+    alignItems: 'center',
   },
   title: {
-    fontFamily: 'monospace',
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#472601',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#0f766e',
     textAlign: 'center',
-    backgroundColor: 'rgb(255, 243, 212)',
-    padding: 10,
-    borderRadius: 5,
+    letterSpacing: -0.3,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#6b7280',
+    textAlign: 'center',
+    marginTop: 8,
+    lineHeight: 18,
   },
   buttonContainer: {
     width: '100%',
-    marginBottom: 20,
+    marginBottom: 18,
     alignItems: 'center',
   },
   cameraButton: {
-    backgroundColor: '#fff',
-    borderRadius: 99,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#000',
+    borderColor: '#0d9488',
     marginVertical: 5,
-    width: '80%',
+    width: '100%',
   },
   buttonLabel: {
-    color: '#000',
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    fontWeight: '600',
+    fontSize: 15,
+    letterSpacing: 0.3,
   },
   photoContainer: {
     alignItems: 'center',
@@ -329,39 +327,41 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   croppedImage: {
-    width: '70%', // make changes here try 60 -> 80 ?
-    height: 240, // we can make it height much better
-    borderWidth: 2,
-    borderColor: '#888',
-    borderRadius: 10,
+    width: '70%',
+    height: 240,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 12,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#472601',
-    marginBottom: 10,
-    alignSelf: 'flex-start',
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#6b7280',
+    marginBottom: 14,
+    alignSelf: 'center',
   },
   inputContainer: {
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   inputLabel: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#6b7280',
   },
   textInput: {
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
   },
   confirmButton: {
-    backgroundColor: '#fff',
-    borderRadius: 99,
-    borderWidth: 2,
-    borderColor: '#000',
+    borderRadius: 12,
     marginTop: 20,
-    width: '80%',
+    width: '100%',
     alignSelf: 'center',
+  },
+  confirmLabel: {
+    fontWeight: '700',
+    fontSize: 16,
+    paddingVertical: 4,
   },
 });

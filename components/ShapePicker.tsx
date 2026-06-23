@@ -7,15 +7,22 @@ interface ShapePickerProps {
   onShapeSelect: (shape: string) => void;
 }
 
+// English labels for display, Chinese values sent to the backend.
+const SHAPES = [
+  { value: '圓形', label: 'Round' },
+  { value: '橢圓形', label: 'Oval' },
+  { value: '其他', label: 'Other' },
+];
+
+const labelFor = (value: string) =>
+  SHAPES.find((s) => s.value === value)?.label ?? value;
+
 const ShapePicker: React.FC<ShapePickerProps> = ({ selectedShape, onShapeSelect }) => {
   const [visible, setVisible] = React.useState(false);
 
-  // Exact same shapes as website
-  const shapes = ['圓形', '橢圓形', '其他'];
-
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>外型：</Text>
+      <Text style={styles.label}>Shape</Text>
       <Menu
         visible={visible}
         onDismiss={() => setVisible(false)}
@@ -24,22 +31,22 @@ const ShapePicker: React.FC<ShapePickerProps> = ({ selectedShape, onShapeSelect 
             mode="outlined"
             onPress={() => setVisible(true)}
             style={styles.selectButton}
-            buttonColor="white"
-            textColor="#333333"
+            buttonColor="#ffffff"
+            textColor="#1f2937"
             labelStyle={styles.selectLabel}
           >
-            {selectedShape || '請選擇外型'}
+            {selectedShape ? labelFor(selectedShape) : 'Select shape'}
           </Button>
         }
       >
-        {shapes.map((shape) => (
+        {SHAPES.map((option) => (
           <Menu.Item
-            key={shape}
+            key={option.label}
             onPress={() => {
-              onShapeSelect(shape);
+              onShapeSelect(option.value);
               setVisible(false);
             }}
-            title={shape}
+            title={option.label}
           />
         ))}
       </Menu>
@@ -50,26 +57,25 @@ const ShapePicker: React.FC<ShapePickerProps> = ({ selectedShape, onShapeSelect 
 const styles = StyleSheet.create({
   container: {
     width: '100%',
-    marginBottom: 10,
+    marginBottom: 12,
   },
   label: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#333',
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 6,
+    color: '#6b7280',
   },
   selectButton: {
-    backgroundColor: 'white',
-    borderWidth: 3,
-    borderColor: '#000000',
-    borderRadius: 0,
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    borderRadius: 10,
     justifyContent: 'flex-start',
   },
   selectLabel: {
     fontSize: 15,
-    fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
 });
 
