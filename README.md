@@ -2,6 +2,9 @@
 
 A cross-platform **React Native (Expo)** mobile app for identifying medical pills from a photo. It's the mobile companion to the **Pill Identification System** backend — snap or upload a pill image, and the app reads the imprint (OCR), detects the color and shape (HSV recognition), lets you adjust the results, and matches against a drug database to return the most likely medications with their indications, precautions, and side effects.
 
+> **Part of a full-stack project:** this mobile app + the **[Pill Identification System backend](https://github.com/Rushikesh-Sontakke/Pill_Identification_Deep_Learning)** (Python/Flask · YOLO · OCR · HSV).
+> 🔗 **Live backend demo:** https://rushijain-pill-identification.hf.space
+
 ## Features
 
 - 📷 **Capture or upload** — take a photo with the camera or pick one from the gallery
@@ -59,7 +62,7 @@ Expo SDK 54 · React Native 0.81 · React 19 · TypeScript · expo-router (file-
 
 ## Backend
 
-The app talks to the Pill Identification System backend, configured in [`services/api.ts`](services/api.ts):
+The app talks to the **[Pill Identification System backend](https://github.com/Rushikesh-Sontakke/Pill_Identification_Deep_Learning)** (deployed on Hugging Face Spaces), configured in [`services/api.ts`](services/api.ts):
 
 ```ts
 const BASE_URL = 'https://rushijain-pill-identification.hf.space';
